@@ -87,10 +87,20 @@ class CourseService {
             let intro_video_name = null;
             let banner_name = null;
 
-            
+            // 1. Intro video tekshiruvi va yuklash
             if (req.files && req.files.intro_video) {
                 let videoFile = req.files.intro_video;
-                let ext = path.extname(videoFile.name);
+                let ext = path.extname(videoFile.name).toLowerCase();
+                
+                // Faqat ruxsat etilgan video formatlari
+                const allowedVideoExtensions = ['.mp4', '.mov', '.mkv', '.avi', '.webm'];
+                if (!allowedVideoExtensions.includes(ext)) {
+                    return { 
+                        status: 400, 
+                        message: `Unsupported video format! Faqat quyidagi formatlar qo'llab-quvvatlanadi: ${allowedVideoExtensions.join(', ')}` 
+                    };
+                }
+
                 intro_video_name = `intro_${Date.now()}${ext}`;
                 let uploadPath = path.join(process.cwd(), "src", "utils", "uploads_introVideo", intro_video_name);
 
@@ -102,10 +112,19 @@ class CourseService {
                 });
             }
 
-            
             if (req.files && req.files.banner) {
                 let bannerFile = req.files.banner;
-                let ext = path.extname(bannerFile.name);
+                let ext = path.extname(bannerFile.name).toLowerCase();
+                
+                
+                const allowedImageExtensions = ['.jpg', '.jpeg', '.png', '.webp', '.avif'];
+                if (!allowedImageExtensions.includes(ext)) {
+                    return { 
+                        status: 400, 
+                        message: `Unsupported banner format, Faqat rasm formatlari yuklanishi kerak: ${allowedImageExtensions.join(', ')}` 
+                    };
+                }
+
                 banner_name = `banner_${Date.now()}${ext}`;
                 let uploadPath = path.join(process.cwd(), "src", "utils", "uploads_introVideo", banner_name);
 
@@ -117,7 +136,7 @@ class CourseService {
                 });
             }
 
-            
+           
             let newCourse = await pool.query(
                 `INSERT INTO courses (title, description, banner, intro_video, level, price, category_id, mentor_id, assistant_id)
                  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,

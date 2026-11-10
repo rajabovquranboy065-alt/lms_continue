@@ -16,6 +16,7 @@ import entrolrouter from "./entrolCourse.js";
 import MyCourserouter from "./myCourse.js";
 import Mysectionrouter from "./mySections.js";
 import mylessonrouter from "./mylessons.js"
+import MyMentorrouter from "./mentorMycourse.js"
 import { Router } from "express";
 
 
@@ -40,6 +41,7 @@ main
     .use(MyCourserouter)
     .use(Mysectionrouter)
     .use(mylessonrouter)
+    .use(MyMentorrouter)
 
 
 
