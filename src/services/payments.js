@@ -48,7 +48,7 @@ class PaymentService {
             await pool.query(
                 `INSERT INTO payments (student_id, course_id, amount, payment_type, status) 
                  VALUES ($1, $2, $3, $4, $5)`,
-                [student_id, course_id, amount, payment_type, status || 'To`landi']
+                [student_id, course_id, amount, payment_type, status]
             )
 
             return { status: 201, message: "To'lov muvaffaqiyatli qo'shildi!" }

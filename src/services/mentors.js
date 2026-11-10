@@ -4,11 +4,21 @@ class Mentors{
     constructor(){}
 
     async getAllMentors(){
-        let res=await pool.query(`SELECT id, fullname, phone, role, status, created_at FROM mentors`)
-        res=res.rows
-        return{
-            status:200,
-            data:res
+        let res=null
+        try {
+            let res=await pool.query(`SELECT id, fullname, phone, role, status, created_at,website,bio,social_facebook,social_telegram,social_linkedin,social_instagram,social_github,image FROM mentors`)
+            res=res.rows
+            return{
+                status:200,
+                data:res
+            }
+            
+        } catch (error) {
+            return {
+                status:400,
+                data:res,
+                message:error.message
+            }
         }
     }
 

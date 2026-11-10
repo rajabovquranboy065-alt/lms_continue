@@ -7,7 +7,7 @@ import { verifyToken } from "../middleware/auth.js";
 let mentorsRouter=Router()
 
 mentorsRouter
-    .get("/get/mentors",verifyToken,isAdmin,controllers.getAllMentors)
+    .get("/mentors",controllers.getAllMentors)
     .post("/add/mentor",verifyToken,isAdmin,MentorMiddleware,controllers.addMentor)
     .delete("/delete/mentor/:id",verifyToken,isAdmin,controllers.deleteMentor)
     .get("/get/mentor/:mentorId",verifyToken,isAdmin,controllers.getTHIS_Mentor)

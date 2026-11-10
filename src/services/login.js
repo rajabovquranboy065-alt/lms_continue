@@ -5,9 +5,16 @@ class Login{
     constructor(){}
     async loginn(req,res){
     //    console.log("sdfesdwdsc")
+    // console.log(req.body)
         let {phone,password}= req.body
 
-        let this_number=await pool.query(`select id , fullname,phone, password ,role from staff where phone=$1 union select id , fullname,phone, password ,role from mentors where phone=$1`,[phone])
+        let this_number=await pool.query(`
+             select id , fullname,phone, password ,role from staff where phone=$1
+             union 
+             select id , fullname,phone, password ,role from mentors where phone=$1 
+             union
+             select id , fullname,phone, password ,role from students where phone=$1
+             `,[phone])
 
         if(!this_number.rows.length){
                 return res.status(400).json({
@@ -36,7 +43,8 @@ class Login{
         return res.status(200).json({
             status:200,
             acses_Token,
-            refresh_Token
+            refresh_Token,
+            role:this_number.rows[0].role
 
         })
     }

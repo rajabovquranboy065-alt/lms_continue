@@ -7,7 +7,8 @@ class Mentors{
 
         return res.status(resData.status).json({
             status:resData.status,
-            data:resData.data
+            data:resData.data,
+            message:resData.message?resData.message:null
         })
      }
 

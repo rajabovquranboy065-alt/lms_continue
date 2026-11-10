@@ -6,7 +6,7 @@ import { verifyToken } from "../middleware/auth.js";
 let staffrouter=Router()
 
 staffrouter
-    .post("/admin",verifyToken,isAdmin,AdminMiddleware,controllers.createAdmin)
+    .post("/admin",AdminMiddleware,controllers.createAdmin)
     .get("/get/admins",verifyToken,isAdmin,controllers.getAllAdmins)
     .delete("/delete/staff/:userId",verifyToken,isAdmin,controllers.deleteAdmin)
 
