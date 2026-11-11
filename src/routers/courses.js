@@ -9,7 +9,7 @@ courseRouter
     .get("/courses", courseController.getCourses)
     .get("/courses/:id", verifyToken, isAdmin, courseController.getCourseById)
     .get("/courses/:id/students", verifyToken, isAdmin, courseController.getCourseStudents)
-    .post("/courses", verifyToken, isAdmin, courseController.addCourse)
+    .post("/courses", verifyToken, courseController.addCourse)
     .put("/courses/:courseId/assistant/:assistantId",verifyToken,isAdmin,courseController.assignAssistant)
     .put("/courses/:id", verifyToken, isAdmin, courseController.updateCourse)
     .delete("/courses/:id", verifyToken, isAdmin, courseController.deleteCourse)

@@ -9,7 +9,7 @@ router.get("/sections", sectionController.getAll);
 router.post("/sections",verifyToken,sectionController.create);
 router.delete("/sections/:id",verifyToken,sectionController.delete);
 router.put("/sections/:id",verifyToken, sectionController.update);
-router.get("/sections/course/:courseId", sectionController.getByCourseId);
+router.get("/sections/course/:courseId", verifyToken,sectionController.getSectionByCourseId);
 
 
 export default router;

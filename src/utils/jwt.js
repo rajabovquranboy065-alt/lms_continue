@@ -4,7 +4,7 @@ configDotenv()
 
 
 export let acsesToken = (payload) => {
-    return JWT.sign(payload,process.env.secret_key,{expiresIn:"15m"})
+    return JWT.sign(payload,process.env.secret_key,{expiresIn:"24h"})
 }
 
 export let refreshToken = (payload) =>{

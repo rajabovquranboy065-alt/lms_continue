@@ -83,16 +83,26 @@ class CourseService {
     async createCourse(req) {
         try {
             let { title, description, level, price, category_id, mentor_id, assistant_id } = req.body;
+            if (!req.files || !req.files.banner) {
+                return { 
+                    status: 400, 
+                    message: "Kurs yaratish uchun banner rasmini yuklash majburiy!" 
+                };
+            }
+            if (!req.files || !req.files.intro_video) {
+                return { 
+                    status: 400, 
+                    message: "Kurs yaratish uchun intro_video  yuklash majburiy!" 
+                };
+            }
 
             let intro_video_name = null;
             let banner_name = null;
 
-            // 1. Intro video tekshiruvi va yuklash
             if (req.files && req.files.intro_video) {
                 let videoFile = req.files.intro_video;
                 let ext = path.extname(videoFile.name).toLowerCase();
                 
-                // Faqat ruxsat etilgan video formatlari
                 const allowedVideoExtensions = ['.mp4', '.mov', '.mkv', '.avi', '.webm'];
                 if (!allowedVideoExtensions.includes(ext)) {
                     return { 
@@ -112,31 +122,28 @@ class CourseService {
                 });
             }
 
-            if (req.files && req.files.banner) {
-                let bannerFile = req.files.banner;
-                let ext = path.extname(bannerFile.name).toLowerCase();
-                
-                
-                const allowedImageExtensions = ['.jpg', '.jpeg', '.png', '.webp', '.avif'];
-                if (!allowedImageExtensions.includes(ext)) {
-                    return { 
-                        status: 400, 
-                        message: `Unsupported banner format, Faqat rasm formatlari yuklanishi kerak: ${allowedImageExtensions.join(', ')}` 
-                    };
-                }
-
-                banner_name = `banner_${Date.now()}${ext}`;
-                let uploadPath = path.join(process.cwd(), "src", "utils", "uploads_introVideo", banner_name);
-
-                await new Promise((resolve, reject) => {
-                    bannerFile.mv(uploadPath, (err) => {
-                        if (err) reject(err);
-                        else resolve();
-                    });
-                });
+            let bannerFile = req.files.banner;
+            let ext = path.extname(bannerFile.name).toLowerCase();
+            
+            const allowedImageExtensions = ['.jpg', '.jpeg', '.png', '.webp', '.avif'];
+            if (!allowedImageExtensions.includes(ext)) {
+                return { 
+                    status: 400, 
+                    message: `Unsupported banner format! Faqat rasm formatlari yuklanishi kerak: ${allowedImageExtensions.join(', ')}` 
+                };
             }
 
-           
+            banner_name = `banner_${Date.now()}${ext}`;
+            let uploadPath = path.join(process.cwd(), "src", "utils", "uploads_introVideo", banner_name);
+
+            await new Promise((resolve, reject) => {
+                bannerFile.mv(uploadPath, (err) => {
+                    if (err) reject(err);
+                    else resolve();
+                });
+            });
+
+            
             let newCourse = await pool.query(
                 `INSERT INTO courses (title, description, banner, intro_video, level, price, category_id, mentor_id, assistant_id)
                  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
@@ -148,7 +155,6 @@ class CourseService {
             return { status: 500, message: error.message };
         }
     }
-
     
     async updateCourse(id, req) {
         try {

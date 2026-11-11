@@ -145,8 +145,21 @@ class SectionService {
         }
     }
 
-    async getSection(courseId) {
+   async getSection(courseId, reqUser) {
         try {
+            // 1. Token kelmagan bo'lsa
+            if (!reqUser) {
+                return {
+                    status: 401,
+                    message: "Avtorizatsiyadan o'tmagansiz (Token topilmadi)",
+                    data: []
+                };
+            }
+
+            let currentUserId = reqUser.id;
+            let userRole = reqUser?.role;
+
+            // 2. Kurs mavjudligi va uning mentorini tekshiramiz
             let courseCheck = await pool.query(`SELECT * FROM courses WHERE id = $1`, [courseId]);
             
             if (!courseCheck.rows.length) {
@@ -157,12 +170,25 @@ class SectionService {
                 };
             }
 
+            let course = courseCheck.rows[0];
+
+            // 3. Agar foydalanuvchi Admin bo'lmasa va bu kurs uning o'rniga tegishli bo'lmasa
+            if (userRole !== "Admin" && course.mentor_id !== currentUserId) {
+                return {
+                    status: 403,
+                    message: "Siz faqat o'zingizning kursingizning bo'limlarini ko'ra olasiz!",
+                    data: []
+                };
+            }
+
+            // 4. Tekshiruvdan o'tsa, bo'limlarni olib kelamiz
             let sections = await pool.query(
                 `
-                SELECT s.* ,c.title as course_name , c.price,c.banner ,m.image as teacher_image,m.fullname as teacher_name FROM sections s 
-                LEFT JOIN courses c on s.course_id=c.id
-                LEFT JOIN mentors m on m.id=c.mentor_id
-                 WHERE s.course_id = $1
+                SELECT s.*, c.title as course_name, c.price, c.banner, m.image as teacher_image, m.fullname as teacher_name 
+                FROM sections s 
+                LEFT JOIN courses c ON s.course_id = c.id
+                LEFT JOIN mentors m ON m.id = c.mentor_id
+                WHERE s.course_id = $1
                 `, 
                 [courseId]
             );

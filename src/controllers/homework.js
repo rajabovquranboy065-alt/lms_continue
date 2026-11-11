@@ -27,6 +27,19 @@ class HomeworkController {
             next(error);
         }
     }
+    async getHomeworksByLesson(req, res) {
+        try {
+            let { lesson_id } = req.params;
+            let result = await homeworkService.getHomeworksByLessonId(lesson_id, req.user);
+            
+            return res.status(result.status).json({
+                message: result.message,
+                data: result.data
+            });
+        } catch (error) {
+            return res.status(500).json({ message: error.message });
+        }
+    }
 }
 
 export default new HomeworkController();
